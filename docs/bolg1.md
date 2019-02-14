@@ -18,3 +18,6 @@ dubbo框架为了兼容更多的需求，在不停的拓展，常用的拓展方
 
 - 消息发送 
   
+  无状态消息的发送，很简单，序列化一个对象发送过去就可以，后来有了同步消息发送，需要一个request和response。采用拓展式拓展，无状态消息也是一个没有response的request，所以在request中
+  添加一个boolean状态，表示要不要返回response，如果再来一个会话消息发送，就再加一个session交互，然后发现，同步消息是会话消息的一种，所有场景都传session，不需要session的地方直接忽略即可
+  如果采用增量式拓展，无状态消息不动，同步消息发送，在无状态的基础上增加一个request和response的处理，会话消息发送，在家一个sessionRequest和sessionResponse处理
