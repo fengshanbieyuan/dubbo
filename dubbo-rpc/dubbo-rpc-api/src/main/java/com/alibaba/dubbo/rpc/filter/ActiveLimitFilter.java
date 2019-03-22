@@ -30,6 +30,11 @@ import com.alibaba.dubbo.rpc.RpcStatus;
  * 
  * @author william.liangf
  */
+
+/**
+ * GFC:
+ * 该过滤器主要是用于客户端，控制对同一个服务端方法的调用并发量
+ */
 @Activate(group = Constants.CONSUMER, value = Constants.ACTIVES_KEY)
 public class ActiveLimitFilter implements Filter {
 

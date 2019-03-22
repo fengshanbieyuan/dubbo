@@ -33,6 +33,14 @@ import com.alibaba.dubbo.rpc.RpcException;
  * 
  * @author william.liangf
  */
+
+/**
+ * GFC:
+ * 装饰模式又名包装(Wrapper)模式。装饰模式以对客户端透明的方式扩展对象的功能，是继承关系的一个替代方案
+ * 该类就是使用了装饰模式
+ * 1、装饰模式跟代理模式非常像，都是实现同一个接口，然后有一个被装饰者（被代理者）的成员变量，但是区别在于，装饰模式的构造方法可以将该成员变量传递过来，也就是说，装饰模式可以有使用者决定装饰哪个对象。代理模式的构造方法中直接new出被代理者，不能由使用者决定
+ * 2、
+ */
 public class ProtocolFilterWrapper implements Protocol {
 
     private final Protocol protocol;

@@ -447,16 +447,23 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * GFC: 获取自适应拓展的入口方法
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() {
+        //从缓存中获取自适应拓展
         Object instance = cachedAdaptiveInstance.get();
-        if (instance == null) {
+        if (instance == null) { //缓存未命中
             if(createAdaptiveInstanceError == null) {
                 synchronized (cachedAdaptiveInstance) {
                     instance = cachedAdaptiveInstance.get();
                     if (instance == null) {
                         try {
+                            //创建自适应拓展
                             instance = createAdaptiveExtension();
+                            //将自适应拓展放入缓存
                             cachedAdaptiveInstance.set(instance);
                         } catch (Throwable t) {
                             createAdaptiveInstanceError = t;
@@ -523,7 +530,13 @@ public class ExtensionLoader<T> {
                     type + ")  could not be instantiated: " + t.getMessage(), t);
         }
     }
-    
+
+    /**
+     * GFC：为手工编码的自适应拓展注入依赖
+     * Dubbo中有两种自适应拓展，一种是手工编码的，一种是自动生成的。手工编码的自适应拓展中可能存在一些依赖，自动生成的拓展不需要
+     * @param instance
+     * @return
+     */
     private T injectExtension(T instance) {
         try {
             if (objectFactory != null) {
@@ -561,7 +574,13 @@ public class ExtensionLoader<T> {
 	        throw new IllegalStateException("No such extension \"" + name + "\" for " + type.getName() + "!");
 	    return clazz;
 	}
-	
+
+    /**
+     * GFC:用于获取某个接口的所有实现类
+     * 1、比如：该方法可以获取Protocol 接口的 DubboProtocol、HttpProtocol、InjvmProtocol 等实现类
+     * 2、如果某个实现类被 Adaptive 注解修饰了，那么该类就会被赋值给 cachedAdaptiveClass 变量
+     * @return
+     */
 	private Map<String, Class<?>> getExtensionClasses() {
         Map<String, Class<?>> classes = cachedClasses.get();
         if (classes == null) {
@@ -718,31 +737,62 @@ public class ExtensionLoader<T> {
         }
         return extension.value();
     }
-    
+
+    /**
+     * GFC：创建自适应拓展
+     * 1、调用getAdaptiveExtensionClass方法获取自适应拓展的Class对象
+     * 2、通过反射进行实例化
+     * 3、调用injectExtension方法向拓展实例中注入依赖
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private T createAdaptiveExtension() {
         try {
+            //获取自适应拓展类，并通过反射实例化
             return injectExtension((T) getAdaptiveExtensionClass().newInstance());
         } catch (Exception e) {
             throw new IllegalStateException("Can not create adaptive extenstion " + type + ", cause: " + e.getMessage(), e);
         }
     }
-    
+
+    /**
+     * GFC：获取自适应拓展类
+     * 1、调用getExtensionClasses获取所有的拓展类
+     * 2、检查缓存，若缓存不为空，则返回缓存
+     * 3、若缓存为空，则调用createAdaptiveExtensionClass创建自适应拓展类
+     * @return
+     */
     private Class<?> getAdaptiveExtensionClass() {
+        //通过SPI获取所有的拓展类
         getExtensionClasses();
+        //检查缓存，若缓存不为空，则直接返回缓存
         if (cachedAdaptiveClass != null) {
             return cachedAdaptiveClass;
         }
+        //创建自适应拓展类
         return cachedAdaptiveClass = createAdaptiveExtensionClass();
     }
-    
+
+    /**
+     * GFC:该方法用于生成自适应拓展类
+     * 首先该方法会生成自适应拓展类的源码，然后通过Compiler实例编译源码，得到代理类Class实例
+     * @return
+     */
     private Class<?> createAdaptiveExtensionClass() {
+        // 构建自适应代码
         String code = createAdaptiveExtensionClassCode();
         ClassLoader classLoader = findClassLoader();
+        // 获取编译器实现类
         com.alibaba.dubbo.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(com.alibaba.dubbo.common.compiler.Compiler.class).getAdaptiveExtension();
+        // 编译代码，生成class
         return compiler.compile(code, classLoader);
     }
-    
+
+    /**
+     * GFC:生成自适应拓展类的代码
+     * 1、
+     * @return
+     */
     private String createAdaptiveExtensionClassCode() {
         StringBuilder codeBuidler = new StringBuilder();
         Method[] methods = type.getMethods();

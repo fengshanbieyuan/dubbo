@@ -31,6 +31,11 @@ import com.alibaba.dubbo.rpc.RpcInvocation;
  * 
  * @author william.liangf
  */
+
+/**
+ * GFC:
+ * 该过滤器主要用于将消费者的隐式参数传递给提供者
+ */
 @Activate(group = Constants.CONSUMER, order = -10000)
 public class ConsumerContextFilter implements Filter {
 
@@ -47,6 +52,9 @@ public class ConsumerContextFilter implements Filter {
         try {
             return invoker.invoke(invocation);
         } finally {
+            //GFC:
+            //1、在客户端调用Invoker.invoke方法时候，会去取当前状态记录器RpcContext中的attachments属性，然后设置到RpcInvocation对象中
+            //2、为第二次调用做准备，清除本次调用的的参数
             RpcContext.getContext().clearAttachments();
         }
     }
