@@ -140,15 +140,19 @@ public class ConfigUtils {
     }
 	
     private static volatile Properties PROPERTIES;
-    
+
+	//Dubbo配置文件
     public static Properties getProperties() {
         if (PROPERTIES == null) {
             synchronized (ConfigUtils.class) {
                 if (PROPERTIES == null) {
+                    //先从虚拟机的系统属性获取，即 java -D参数
                     String path = System.getProperty(Constants.DUBBO_PROPERTIES_KEY);
                     if (path == null || path.length() == 0) {
+                        //如果虚拟机系统属性没有配置，那么从环境变量里面取
                         path = System.getenv(Constants.DUBBO_PROPERTIES_KEY);
                         if (path == null || path.length() == 0) {
+                            //如果环境变量里也没有，那就使用默认的路径
                             path = Constants.DEFAULT_DUBBO_PROPERTIES;
                         }
                     }

@@ -103,20 +103,30 @@ public class ExtensionLoader<T> {
     private static <T> boolean withExtensionAnnotation(Class<T> type) {
         return type.isAnnotationPresent(SPI.class);
     }
-    
+
+    /**
+     * 获取拓展类加载器
+     * @param type 泛型的类型
+     * @param <T>  声明一个泛型方法
+     * @return  ExtensionLoader<T> 返回值类型，一个T类型的ExtensionLoader
+     */
     @SuppressWarnings("unchecked")
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
+        //拓展类不为空
         if (type == null)
             throw new IllegalArgumentException("Extension type == null");
+        //拓展类必须一个接口
         if(!type.isInterface()) {
             throw new IllegalArgumentException("Extension type(" + type + ") is not interface!");
         }
+        //拓展类必须到@SPI注解
         if(!withExtensionAnnotation(type)) {
             throw new IllegalArgumentException("Extension type(" + type + 
                     ") is not extension, because WITHOUT @" + SPI.class.getSimpleName() + " Annotation!");
         }
-        
+        //先从缓存获取
         ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
+        //缓存没有的话，就创建一个，放到缓存中
         if (loader == null) {
             EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type));
             loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
@@ -125,7 +135,10 @@ public class ExtensionLoader<T> {
     }
 
     private ExtensionLoader(Class<?> type) {
+        //保存当前拓展加载器的类型
         this.type = type;
+        //如果不是ExtensionFactory，先加载ExtensionFactory
+        //创建ExtensionFactory的时候，会加载所有的拓展实现
         objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
     }
     
@@ -596,6 +609,7 @@ public class ExtensionLoader<T> {
 	}
 
     // 此方法已经getExtensionClasses方法同步过。
+    //加载某个拓展类的所有实现
     private Map<String, Class<?>> loadExtensionClasses() {
         final SPI defaultAnnotation = type.getAnnotation(SPI.class);
         if(defaultAnnotation != null) {

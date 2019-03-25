@@ -40,23 +40,26 @@ public class Main {
     
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
+    //第一步，首先加载默认的spring Container拓展
     private static final ExtensionLoader<Container> loader = ExtensionLoader.getExtensionLoader(Container.class);
     
     private static volatile boolean running = true;
 
     public static void main(String[] args) {
         try {
+            //从虚拟机属性中获取启动dubbo的容器配置
             if (args == null || args.length == 0) {
                 String config = ConfigUtils.getProperty(CONTAINER_KEY, loader.getDefaultExtensionName());
                 args = Constants.COMMA_SPLIT_PATTERN.split(config);
             }
-            
+            //可以用多个容器启动dubbo
             final List<Container> containers = new ArrayList<Container>();
             for (int i = 0; i < args.length; i ++) {
                 containers.add(loader.getExtension(args[i]));
             }
             logger.info("Use container type(" + Arrays.toString(args) + ") to run dubbo serivce.");
-            
+
+            //添加关闭Dubbo钩子，优雅关机，在执行ctrl+c 或者是 kill -15的时候会触发钩子
             if ("true".equals(System.getProperty(SHUTDOWN_HOOK_KEY))) {
 	            Runtime.getRuntime().addShutdownHook(new Thread() {
 	                public void run() {
