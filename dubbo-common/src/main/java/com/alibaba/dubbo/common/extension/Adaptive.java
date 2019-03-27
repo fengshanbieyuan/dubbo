@@ -36,7 +36,7 @@ import com.alibaba.dubbo.common.URL;
 /**
  * GFC:
  * 1、Adaptive可以注解在类或者方法是哪个
- * 2、当Adaptive注解在类上时，Dubbo不会为该类生成代理类，表示拓展逻辑由人工编码完成。仅有两个类有Adaptive注解，分别是AdaptiveCompiler和AdaptiveExtensionFactory
+ * 2、当Adaptive注解在类上时，Dubbo不会为该类生成代理类（代理类的作用主要是根据url里面的配置来选择合适的拓展类来调用），表示该类就是一个自适应类，逻辑由人工编码完成。仅有两个类有Adaptive注解，分别是AdaptiveCompiler和AdaptiveExtensionFactory
  * 3、当Adaptive注解在方法上时，Dubbo会为该方法生成代理逻辑，相关实现在{@link com.alibaba.dubbo.common.extension.ExtensionLoader#getAdaptiveExtension()}
  */
 
@@ -61,6 +61,10 @@ public @interface Adaptive {
      * 即对于Extension接口{@code com.alibaba.dubbo.xxx.YyyInvokerWrapper}的缺省值为<code>String[] {"yyy.invoker.wrapper"}</code>
      * 
      * @see SPI#value()
+     */
+    /**
+     * GFC：value的值是作为一个key，去url中查询该key对应的值，将这个值作为拓展的名字，调用对应的拓展方法，如果不设置这个值，就用@SPI中设置的默认值
+     * @return
      */
     String[] value() default {};
     
