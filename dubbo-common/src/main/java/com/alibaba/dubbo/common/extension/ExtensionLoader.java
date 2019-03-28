@@ -55,6 +55,12 @@ import com.alibaba.dubbo.common.utils.StringUtils;
  * @author william.liangf
  * @author ding.lid
  *
+ * GFC :
+ * 参考文档：
+ * http://dubbo.apache.org/zh-cn/docs/dev/SPI.html
+ * http://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html
+ * http://dubbo.apache.org/zh-cn/docs/source_code_guide/adaptive-extension.html
+ *
  * @see com.alibaba.dubbo.common.extension.SPI
  * @see com.alibaba.dubbo.common.extension.Adaptive
  * @see com.alibaba.dubbo.common.extension.Activate

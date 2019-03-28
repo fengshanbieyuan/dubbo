@@ -59,7 +59,7 @@ public class Main {
             }
             logger.info("Use container type(" + Arrays.toString(args) + ") to run dubbo serivce.");
 
-            //添加关闭Dubbo钩子，优雅关机，在执行ctrl+c 或者是 kill -15的时候会触发钩子
+            //添加关闭Dubbo钩子，优雅关机，在执行ctrl+c 或者是 kill -15的时候会触发钩子，但是kill -9不会
             if ("true".equals(System.getProperty(SHUTDOWN_HOOK_KEY))) {
 	            Runtime.getRuntime().addShutdownHook(new Thread() {
 	                public void run() {
