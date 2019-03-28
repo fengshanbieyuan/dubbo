@@ -253,7 +253,14 @@ public class ExtensionLoader<T> {
         }
         return exts;
     }
-    
+
+    /**
+     * GFC : 判断指定的group是否在groups之中
+     * 在获取拓展的时候可以获取指定group的拓展，group在{@link com.alibaba.dubbo.common.extension.Activate} #group 注解中
+     * @param group
+     * @param groups
+     * @return
+     */
     private boolean isMatchGroup(String group, String[] groups) {
         if (group == null || group.length() == 0) {
             return true;
@@ -267,7 +274,14 @@ public class ExtensionLoader<T> {
         }
         return false;
     }
-    
+
+    /**
+     * GFC ： 根据指定的url判断某个拓展会不会激活
+     * 在{@link com.alibaba.dubbo.common.extension.Activate}的value，是一个激活条件，只有在url中含有value中的某个值的时候才会激活该拓展
+     * @param activate
+     * @param url
+     * @return
+     */
     private boolean isActive(Activate activate, URL url) {
         String[] keys = activate.value();
         if (keys == null || keys.length == 0) {
@@ -317,8 +331,9 @@ public class ExtensionLoader<T> {
     }
 
     /**
+     * GFC ：
      * 返回指定名字的扩展。如果指定名字的扩展不存在，则抛异常 {@link IllegalStateException}.
-     *
+     * 如果指定的拓展点还没有加载的话，那么会触发主动加载
      * @param name
      * @return
      */
@@ -351,6 +366,7 @@ public class ExtensionLoader<T> {
 	 * 返回缺省的扩展，如果没有设置则返回<code>null</code>。 
 	 */
 	public T getDefaultExtension() {
+	    //在getExtensionClasses()->loadExtensionClasses()中会设置cachedDefaultName的值
 	    getExtensionClasses();
         if(null == cachedDefaultName || cachedDefaultName.length() == 0
                 || "true".equals(cachedDefaultName)) {
@@ -359,6 +375,11 @@ public class ExtensionLoader<T> {
         return getExtension(cachedDefaultName);
 	}
 
+    /**
+     * GFC：判断name有没有对应的拓展
+     * @param name
+     * @return
+     */
 	public boolean hasExtension(String name) {
 	    if (name == null || name.length() == 0)
 	        throw new IllegalArgumentException("Extension name == null");
@@ -368,7 +389,11 @@ public class ExtensionLoader<T> {
 	        return false;
 	    }
 	}
-    
+
+    /**
+     * GFC ：获取所有的拓展点的名字
+     * @return
+     */
 	public Set<String> getSupportedExtensions() {
         Map<String, Class<?>> clazzes = getExtensionClasses();
         return Collections.unmodifiableSet(new TreeSet<String>(clazzes.keySet()));
@@ -393,15 +418,17 @@ public class ExtensionLoader<T> {
     public void addExtension(String name, Class<?> clazz) {
         getExtensionClasses(); // load classes
 
+        //clazz必须跟type相同，或者是type的子类或接口
         if(!type.isAssignableFrom(clazz)) {
             throw new IllegalStateException("Input type " +
                     clazz + "not implement Extension " + type);
         }
+        //clazz必须是一个接口
         if(clazz.isInterface()) {
             throw new IllegalStateException("Input type " +
                     clazz + "can not be interface!");
         }
-
+        //如果是不带Adaptive注解
         if(!clazz.isAnnotationPresent(Adaptive.class)) {
             if(StringUtils.isBlank(name)) {
                 throw new IllegalStateException("Extension name is blank (Extension " + type + ")!");
@@ -414,7 +441,9 @@ public class ExtensionLoader<T> {
             cachedNames.put(clazz, name);
             cachedClasses.get().put(name, clazz);
         }
+        //如果是带Adaptive注解，说明这个拓展是个自适应拓展
         else {
+            //如果是自适应拓展类已经存在了，抛错
             if(cachedAdaptiveClass != null) {
                 throw new IllegalStateException("Adaptive Extension already existed(Extension " + type + ")!");
             }
@@ -593,7 +622,12 @@ public class ExtensionLoader<T> {
         }
         return instance;
     }
-    
+
+    /**
+     * GFC :获取名字为name的拓展点的类
+     * @param name
+     * @return
+     */
 	private Class<?> getExtensionClass(String name) {
 	    if (type == null)
 	        throw new IllegalArgumentException("Extension type == null");
