@@ -60,6 +60,10 @@ import com.alibaba.dubbo.rpc.Protocol;
  * @author william.liangf
  * @export
  */
+
+/**
+ * GFC: 配置文件解析实现，将beanDefinition放入beanFactory
+ */
 public class DubboBeanDefinitionParser implements BeanDefinitionParser {
     
     private static final Logger logger = LoggerFactory.getLogger(DubboBeanDefinitionParser.class);
@@ -83,6 +87,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         beanDefinition.setBeanClass(beanClass);
         beanDefinition.setLazyInit(false);
         String id = element.getAttribute("id");
+        //id没有配置
         if ((id == null || id.length() == 0) && required) {
         	String generatedBeanName = element.getAttribute("name");
         	if (generatedBeanName == null || generatedBeanName.length() == 0) {

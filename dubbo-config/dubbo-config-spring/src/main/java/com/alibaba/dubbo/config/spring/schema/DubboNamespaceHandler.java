@@ -31,6 +31,8 @@ import com.alibaba.dubbo.config.spring.ServiceBean;
 
 /**
  * DubboNamespaceHandler
+ *
+ * GFC：注册配置处理器
  * 
  * @author william.liangf
  * @export
