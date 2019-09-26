@@ -41,6 +41,13 @@ import com.alibaba.dubbo.rpc.support.RpcUtils;
  * @author qian.lei
  * @author william.liangf
  */
+
+/**
+ * GFC：
+ * rpc调用实际实现类
+ * 调用流程在该类的invoke方法实现，doInvoke方法根据不同的协议，可能实现方式不同，所以由子类分别实现
+ * @param <T>
+ */
 public abstract class AbstractInvoker<T> implements Invoker<T> {
 
     protected final Logger   logger    = LoggerFactory.getLogger(getClass());
@@ -119,6 +126,12 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
         return getInterface() + " -> " + (getUrl() == null ? "" : getUrl().toString());
     }
 
+    /**
+     * 调用的模板方法，具体的各个协议的调用方式，由doInvoke个性化实现
+     * @param inv
+     * @return
+     * @throws RpcException
+     */
     public Result invoke(Invocation inv) throws RpcException {
         if(destroyed) {
             throw new RpcException("Rpc invoker for service " + this + " on consumer " + NetUtils.getLocalHost() 

@@ -30,6 +30,11 @@ import com.alibaba.dubbo.common.URL;
  * @serial Don't change the class name and properties.
  * @author qian.lei
  */
+
+/**
+ * GFC
+ * 该类是RPC调用的传输对象
+ */
 public class RpcInvocation implements Invocation, Serializable {
 
     private static final long serialVersionUID = -4355285085441097045L;

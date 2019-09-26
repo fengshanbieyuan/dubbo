@@ -48,6 +48,13 @@ import com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory;
  * @author william.liangf
  * @export
  */
+
+/**
+ * GFC
+ * 在afterPropertiesSet最后，调用export()暴露服务
+ *
+ * @param <T>
+ */
 public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean, DisposableBean, ApplicationContextAware, ApplicationListener, BeanNameAware {
 
 	private static final long serialVersionUID = 213195494150089726L;
@@ -101,6 +108,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
         this.beanName = name;
     }
 
+    //容器启动后，开始导出服务
     public void onApplicationEvent(ApplicationEvent event) {
         if (ContextRefreshedEvent.class.getName().equals(event.getClass().getName())) {
         	if (isDelay() && ! isExported() && ! isUnexported()) {
@@ -248,6 +256,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
             }
         }
         if (! isDelay()) {
+            //暴露服务
             export();
         }
     }

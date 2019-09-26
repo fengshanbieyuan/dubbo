@@ -98,8 +98,10 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         return request(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
     }
 
+    //实际的发送请求方法
     public ResponseFuture request(Object request, int timeout) throws RemotingException {
         if (closed) {
+            //该错误经常会遇到，是由于发送通道关闭导致
             throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request + ", cause: The channel " + this + " is closed!");
         }
         // create request.

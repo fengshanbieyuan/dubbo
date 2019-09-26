@@ -232,6 +232,7 @@ public class DubboProtocol extends AbstractProtocol {
         return DEFAULT_PORT;
     }
 
+    //暴露服务
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         URL url = invoker.getUrl();
         
@@ -340,6 +341,7 @@ public class DubboProtocol extends AbstractProtocol {
         return server;
     }
 
+    //引用服务
     public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
 
         // modified by lishen

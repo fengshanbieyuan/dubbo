@@ -22,6 +22,7 @@ import com.alibaba.dubbo.common.extension.SPI;
  * 
  * @author william.liangf
  */
+//该注解表示，Container接口是一个dubbo拓展点接口，参数spring表示默认实现是spring，在没有明确配置要使用什么容器的时候，默认只加载spring容器
 @SPI("spring")
 public interface Container {
     

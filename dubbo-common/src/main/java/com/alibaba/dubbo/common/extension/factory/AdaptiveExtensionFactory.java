@@ -28,6 +28,11 @@ import com.alibaba.dubbo.common.extension.ExtensionLoader;
  * 
  * @author william.liangf
  */
+
+/**
+ * GFC:
+ * AdaptiveExtensionFactory类包含所有的ExtensionFactory集合
+ */
 @Adaptive
 public class AdaptiveExtensionFactory implements ExtensionFactory {
     
@@ -36,6 +41,7 @@ public class AdaptiveExtensionFactory implements ExtensionFactory {
     public AdaptiveExtensionFactory() {
         ExtensionLoader<ExtensionFactory> loader = ExtensionLoader.getExtensionLoader(ExtensionFactory.class);
         List<ExtensionFactory> list = new ArrayList<ExtensionFactory>();
+        //加载所有的ExtensionFactory实现，同时，将所有的实现都放到factories中
         for (String name : loader.getSupportedExtensions()) {
             list.add(loader.getExtension(name));
         }

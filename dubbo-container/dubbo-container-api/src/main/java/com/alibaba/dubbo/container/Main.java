@@ -49,10 +49,11 @@ public class Main {
         try {
             //从虚拟机属性中获取启动dubbo的容器配置
             if (args == null || args.length == 0) {
+                //如果没配置CONTAINER_KEY，就使用默认的容器启动，默认的容器是spring，是在com.alibaba.dubbo.container.Container接口中添加@SPI("spring")注解来实现的默认配置
                 String config = ConfigUtils.getProperty(CONTAINER_KEY, loader.getDefaultExtensionName());
                 args = Constants.COMMA_SPLIT_PATTERN.split(config);
             }
-            //可以用多个容器启动dubbo
+            //可以用多个容器启动dubbo，多个容器之间不是替代关系，是组合关系，就是几个容器可以实现不同的功能，比如logback容器可以自动配置logback日志
             final List<Container> containers = new ArrayList<Container>();
             for (int i = 0; i < args.length; i ++) {
                 containers.add(loader.getExtension(args[i]));

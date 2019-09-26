@@ -35,7 +35,7 @@ import com.alibaba.dubbo.common.URL;
 
 /**
  * GFC:
- * 1、Adaptive可以注解在类或者方法是哪个
+ * 1、Adaptive可以注解在类或者方法上
  * 2、当Adaptive注解在类上时，Dubbo不会为该类生成代理类（代理类的作用主要是根据url里面的配置来选择合适的拓展类来调用），表示该类就是一个自适应类，逻辑由人工编码完成。仅有两个类有Adaptive注解，分别是AdaptiveCompiler和AdaptiveExtensionFactory
  * 3、当Adaptive注解在方法上时，Dubbo会为该方法生成代理逻辑，相关实现在{@link com.alibaba.dubbo.common.extension.ExtensionLoader#getAdaptiveExtension()}
  */

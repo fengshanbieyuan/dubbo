@@ -45,6 +45,7 @@ public class ProtocolFilterWrapper implements Protocol {
 
     private final Protocol protocol;
 
+    //构造方法可以传入一个Protocol对象
     public ProtocolFilterWrapper(Protocol protocol){
         if (protocol == null) {
             throw new IllegalArgumentException("protocol == null");
@@ -56,6 +57,7 @@ public class ProtocolFilterWrapper implements Protocol {
         return protocol.getDefaultPort();
     }
 
+    //
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
             return protocol.export(invoker);
