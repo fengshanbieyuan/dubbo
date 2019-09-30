@@ -63,6 +63,7 @@ import com.alibaba.dubbo.rpc.Protocol;
 
 /**
  * GFC: 配置文件解析实现，将beanDefinition放入beanFactory
+ * 将service标签对应的bean解析为BeanDefinition，并且将结果放入spring
  */
 public class DubboBeanDefinitionParser implements BeanDefinitionParser {
     
@@ -110,6 +111,9 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             if (parserContext.getRegistry().containsBeanDefinition(id))  {
         		throw new IllegalStateException("Duplicate spring bean id " + id);
         	}
+        	//注册BeanDefinition，其实就是将BeanDefinition放到BeanFactory中的beanDefinitionMap中，然后根据需要会实例化相应的bean
+            // 具体逻辑org.springframework.beans.factory.support.DefaultListableBeanFactory.registerBeanDefinition
+            //ServiceBean就是通过这种方式添加到了BeanFactory，所以ServiceBean中的spring相关接口方法才会被调用
             parserContext.getRegistry().registerBeanDefinition(id, beanDefinition);
             beanDefinition.getPropertyValues().addPropertyValue("id", id);
         }

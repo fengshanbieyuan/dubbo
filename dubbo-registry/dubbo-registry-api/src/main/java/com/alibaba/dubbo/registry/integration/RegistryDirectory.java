@@ -153,6 +153,11 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
+    /**
+     * 接收注册中心的通知，发现已经变化的url，然后根据url重新创建invoker
+     * 此处似乎是没有消费者的url传过来，应该是不需要关心消费者的变化，只需要关注提供者、configurators、routers的变化
+     * @param urls 已注册信息列表，总不为空，含义同{@link com.alibaba.dubbo.registry.RegistryService#lookup(URL)}的返回值。
+     */
     public synchronized void notify(List<URL> urls) {
         List<URL> invokerUrls = new ArrayList<URL>();
         List<URL> routerUrls = new ArrayList<URL>();
@@ -204,12 +209,14 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @param invokerUrls 传入的参数不能为null
      */
     private void refreshInvoker(List<URL> invokerUrls){
+        //如果是empty协议，那么就销毁所有的Invokers
         if (invokerUrls != null && invokerUrls.size() == 1 && invokerUrls.get(0) != null
                 && Constants.EMPTY_PROTOCOL.equals(invokerUrls.get(0).getProtocol())) {
             this.forbidden = true; // 禁止访问
             this.methodInvokerMap = null; // 置空列表
             destroyAllInvokers(); // 关闭所有Invoker
         } else {
+            //invokerUrls是null，说明urls在注册中心没有变化，urls发生变化时，是推送的所有的urls
             this.forbidden = false; // 允许访问
             Map<String, Invoker<T>> oldUrlInvokerMap = this.urlInvokerMap; // local reference
             if (invokerUrls.size() == 0 && this.cachedInvokerUrls != null){
@@ -339,8 +346,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 将urls转成invokers,如果url已经被refer过，不再重新引用。
      * 
      * @param urls
-     * @param overrides
-     * @param query
      * @return invokers
      */
     private Map<String, Invoker<T>> toInvokers(List<URL> urls) {
@@ -350,6 +355,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
         Set<String> keys = new HashSet<String>();
         String queryProtocols = this.queryMap.get(Constants.PROTOCOL_KEY);
+        //为每个url创建一个invoker
         for (URL providerUrl : urls) {
         	//如果reference端配置了protocol，则只选择匹配的protocol
         	if (queryProtocols != null && queryProtocols.length() >0) {
