@@ -155,7 +155,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     /**
      * 接收注册中心的通知，发现已经变化的url，然后根据url重新创建invoker
-     * 此处似乎是没有消费者的url传过来，应该是不需要关心消费者的变化，只需要关注提供者、configurators、routers的变化
+     * 此处似乎是没有消费者的url传过来，应该是不需要关心消费者的变化，此处的主体就是消费者，消费者只需要关心提供者的变化，不需要关心其他消费者的变化，所以此处只处理了提供者、configurators、routers的url变化
      * @param urls 已注册信息列表，总不为空，含义同{@link com.alibaba.dubbo.registry.RegistryService#lookup(URL)}的返回值。
      */
     public synchronized void notify(List<URL> urls) {
